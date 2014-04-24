@@ -1,0 +1,22 @@
+[
+	{
+		"question": "What is the best color?",
+		"choices": ["Red", "Green", "Blue", "Black"],
+		"correctAnswer": 0
+	},
+	{
+		"question": "What's my name?",
+		"choices": ["ELALSF", "SDFDG", "EYAL", "NO"],
+		"correctAnswer": 2
+	},
+	{
+		"question": "What's the correct answer?",
+		"choices": ["NO", "YES", "EYAL?", "NO"],
+		"correctAnswer": 1
+	},
+	{
+		"question": "ARE YOU SURE?",
+		"choices": ["yes?", "yes", "no.", "YES!!!"],
+		"correctAnswer": 3
+	}
+]

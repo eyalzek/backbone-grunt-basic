@@ -1,0 +1,42 @@
+{
+	"1": {
+		"question": "What is the best color?",
+		"choices": ["Red", "Green", "Blue", "Black"],
+		"correctAnswer": 0
+	},
+	"2": {
+		"question": "What's my name?",
+		"choices": ["ELALSF", "SDFDG", "EYAL", "NO"],
+		"correctAnswer": 2
+	},
+	"3": {
+		"question": "What's the correct answer?",
+		"choices": ["NO", "YES", "EYAL?", "NO"],
+		"correctAnswer": 1
+	},
+	"4": {
+		"question": "ARE YOU SURE?",
+		"choices": ["yes?", "yes", "no.", "YES!!!"],
+		"correctAnswer": 3
+	},
+	"5": {
+		"question": "What # question is this?",
+		"choices": ["1", "2", "3", "4"],
+		"correctAnswer": 0
+	},
+	"6": {
+		"question": "1+1 is?",
+		"choices": ["1", "2", "3", "4"],
+		"correctAnswer": 1
+	},
+	"7": {
+		"question": "PI is closest to what number?",
+		"choices": ["1", "2", "3", "4"],
+		"correctAnswer": 2
+	},
+	"8": {
+		"question": "How bored are you (higher is more bored)?",
+		"choices": ["1", "2", "3", "4"],
+		"correctAnswer": 3
+	}
+}

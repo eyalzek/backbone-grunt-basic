@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>title</title>
+	<link type="text/css" rel="stylesheet" href="css/style.css">
+</head>
+<body>
+	<div class="container"></div>
+	<script type="text/template" id="questionForm">
+		<h3><%= question.get("question") %></h3>
+		<% _.forEach(question.get("choices"), function(choice, index) { %>
+			<input type='radio' name='option' value="<%= index %>"><%= choice %><br>
+		<% }); %>
+		<input class="next" type='submit' value='Next'>
+	</script>
+	<!-- <div class="message"></div> -->
+	<script src="http://localhost:35729/livereload.js"></script>
+	<script src="http://code.jquery.com/jquery-latest.js"></script>
+	<script src="js/vendor/lodash.js"></script>
+	<script src="js/vendor/backbone.js"></script>
+	<script src="js/app.js"></script>
+</body>
+</html>
