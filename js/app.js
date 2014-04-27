@@ -8,16 +8,9 @@ var app = (function() {
 	var Question = Backbone.Model.extend({});
 
 	var AllQuestions = Backbone.Collection.extend({model: Question}),
-		questions;
+		questions,
+		that = this;
 
-	$.getJSON("/questions.json", function(json, textStatus) {
-		console.log("status: " + textStatus);
-		$.each(json, function(index, current) {
-			questionsArray.push(new Question(current));
-		});
-		console.log(questionsArray);
-		this.questions = new AllQuestions(questionsArray);
-	});
 
 	var QuestionView = Backbone.View.extend({
 		tagName: "form",
@@ -41,7 +34,7 @@ var app = (function() {
 			}
 			else {
 				// console.log("chosen:", chosen);
-				if ($(".message").length < 1) {
+				if ($(".message").html() === "") {
 					$("form").append("<div class='message'>You must choose an answer!</div>");
 				}
 			}
@@ -54,11 +47,23 @@ var app = (function() {
 		}
 	});
 
+	function loadQuestions() {
+		$.getJSON("/questions.json", function(json, textStatus) {
+			console.log("status: " + textStatus);
+			_.each(json, function(current, index) {
+				questionsArray.push(new Question(current));
+			});
+			that.questions = new AllQuestions(questionsArray);
+			// console.log(that.questions);
+			displayNextQuestion();
+			$(".message").empty();
+		});
+	}
+
 	function displayNextQuestion() {
-		console.log("questions: ", questions);
-		console.log("question.models: ", questions.models);
-		var currentQuestion = questions.models[questionIndex];
-		if (questionIndex < questions.length) {
+		console.log("question.models: ", that.questions.models);
+		var currentQuestion = that.questions.models[questionIndex];
+		if (questionIndex < that.questions.length) {
 			// console.log(questionIndex);
 			// console.log(currentQuestion);
 			var qView = new QuestionView({model: currentQuestion});
@@ -95,12 +100,13 @@ var app = (function() {
 	});
 
 	return {
-		begin: function() {
-			displayNextQuestion();
+		init: function() {
+			$(".message").html("Please wait, loading questions...");
+			loadQuestions();
 		}
 	};
 })();
 
 $(document).ready(function() {
-	app.begin();
+	app.init();
 });
