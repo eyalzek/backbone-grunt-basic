@@ -9,10 +9,18 @@
 	<div class="container"></div>
 	<script type="text/template" id="questionForm">
 		<h3><%= question.get("question") %></h3>
+		<% var selected = question.get("selected") %>
 		<% _.forEach(question.get("choices"), function(choice, index) { %>
-			<input type='radio' name='option' value="<%= index %>"><%= choice %><br>
+			<% if (selected === index) { %>
+				<input type="radio" name="option" value="<%= index %>" checked><%= choice %><br>
+			<% } else { %>
+				<input type="radio" name="option" value="<%= index %>"><%= choice %><br>
+			<% } %>
 		<% }); %>
-		<input class="next" type='submit' value='Next'>
+		<% if (index > 0) { %>
+			<input class="previous" type="submit" value="Previous">
+		<% } %>
+		<input class="next" type="submit" value="Next">
 	</script>
 	<div class="message"></div>
 	<script src="http://localhost:35729/livereload.js"></script>

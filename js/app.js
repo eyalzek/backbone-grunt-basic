@@ -1,11 +1,15 @@
 var app = (function() {
 	var Events = _.extend({}, Backbone.Events),
-		chosen = -1,
 		correctCounter = 0,
 		questionIndex = 0,
 		questionsArray = [];
 
-	var Question = Backbone.Model.extend({});
+	var Question = Backbone.Model.extend({
+		defaults: {
+			"selected": -1,
+			"correct": null
+		}
+	});
 
 	var AllQuestions = Backbone.Collection.extend({model: Question}),
 		questions,
@@ -15,34 +19,47 @@ var app = (function() {
 	var QuestionView = Backbone.View.extend({
 		tagName: "form",
 
-		selection: -1,
+		getSelected: function() {
+			return this.model.get("selected");
+		},
+
+		select: function (value) {
+			this.model.set("selected", value);
+		},
 
 		events: {
 			"change input:radio": "getAnswer",
-			"click .next": "checkAnswer"
+			"click .next": "checkAnswer",
+			"click .previous": "previousQuestion"
 		},
 
 		getAnswer: function(e) {
-			this.selection = parseInt($(e.currentTarget).val(), 10);
-			Events.trigger("GetChosen", this.selection);
+			this.select(parseInt($(e.currentTarget).val(), 10));
+			console.log("CURRENT SELECTION: ", this.getSelected());
 		},
 
 		checkAnswer: function(e) {
 			e.preventDefault();
-			if (chosen !== -1) {
+			if (this.getSelected() !== -1) {
+				// console.log("THIS:", this.getSelected());
+				// Events.trigger("SetSelection", this);
 				Events.trigger("SubmitAnswer", this);
 			}
 			else {
-				// console.log("chosen:", chosen);
 				if ($(".message").html() === "") {
 					$("form").append("<div class='message'>You must choose an answer!</div>");
 				}
 			}
 		},
 
+		previousQuestion: function(e) {
+			e.preventDefault();
+			Events.trigger("GoBack", this);
+		},
+
 		render: function(question) {
 			var template = _.template($("#questionForm").html());
-			this.$el.html(template({question: question}));
+			this.$el.html(template({"question": question, "index": questionIndex}));
 			return this;
 		}
 	});
@@ -55,13 +72,14 @@ var app = (function() {
 			});
 			that.questions = new AllQuestions(questionsArray);
 			// console.log(that.questions);
-			displayNextQuestion();
+			displayQuestion();
 			$(".message").empty();
 		});
 	}
 
-	function displayNextQuestion() {
-		console.log("question.models: ", that.questions.models);
+	function displayQuestion() {
+		console.log("Correct answers: ", correctCounter);
+		// console.log("question.models: ", that.questions.models);
 		var currentQuestion = that.questions.models[questionIndex];
 		if (questionIndex < that.questions.length) {
 			// console.log(questionIndex);
@@ -69,11 +87,12 @@ var app = (function() {
 			var qView = new QuestionView({model: currentQuestion});
 			qView.render(currentQuestion);
 			$(".container").append(qView.$el);
+			// console.log("HERE: ", qView.model.get("selected"));
 		}
 		else {
 			$(".container")
 				.append("<p>your score is: " + correctCounter + "!</p>")
-				.append("<button>AGAIN</button>");
+				.append("<button>Start over?</button>");
 			$("button").on("click", restart);
 		}
 	}
@@ -82,21 +101,43 @@ var app = (function() {
 		correctCounter = 0;
 		questionIndex = 0;
 		$(".container").empty();
-		displayNextQuestion();
+		_.each(that.questions.models, function(model) {
+			model.set("selected", -1);
+			model.set("correct", null);
+		});
+		displayQuestion();
 	}
-
-	Events.on("GetChosen", function(selection) {
-		chosen = selection;
-		console.log(chosen);
-	});
 
 	Events.on("SubmitAnswer", function(view) {
 		// console.log(view);
-		if (chosen === view.model.get("correctAnswer")) correctCounter += 1;
+		var alreadyAnswered = view.model.get("correct"),
+			currentSelection = view.model.get("selected"),
+			correctAnswer = view.model.get("correctAnswer");
+
+		if (_.isNull(alreadyAnswered)) {
+			if (currentSelection === correctAnswer) {
+				correctCounter += 1;
+				view.model.set("correct", true);
+			}
+		}
+		else if (alreadyAnswered && (currentSelection !== correctAnswer)) {
+			correctCounter -= 1;
+			view.model.set("correct", false);
+		}
+		else if (!alreadyAnswered && (currentSelection === correctAnswer)) {
+			correctCounter += 1;
+			view.model.set("correct", true);
+		}
+
 		questionIndex += 1;
-		chosen = -1;
 		view.remove();
-		displayNextQuestion();
+		displayQuestion();
+	});
+
+	Events.on("GoBack", function(view) {
+		questionIndex -= 1;
+		view.remove();
+		displayQuestion();
 	});
 
 	return {
